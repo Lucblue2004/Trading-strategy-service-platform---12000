@@ -109,7 +109,7 @@ cd tradex-strategies
 cd backend
 cp .env.example .env
 npm install
-npm run dev        # http://localhost:3001
+npm start        # http://localhost:3001
 ```
 
 > If you need the `.env` file, please contact me.
@@ -156,72 +156,6 @@ cd frontend && vercel --prod
 ```
 
 Set environment variables in the Vercel dashboard for each project.
-
----
-
-## Open Task — Crypto Payment Gateway
-
-We're looking for a developer to wire up the full crypto payment flow. The UI and backend structure are already in place.
-
-### What's already built
-
-- Subscription page with Premium / Elite plan cards and Pay buttons
-- `PaymentModal` component (chain selector, wallet address display, QR code, submission form)
-- Admin panel UI with a Payments tab
-- Supabase `users` table
-
-### What needs to be implemented
-
-**Database**
-```sql
-ALTER TABLE users
-  ADD COLUMN subscription_plan TEXT DEFAULT 'free',
-  ADD COLUMN subscription_expires_at TIMESTAMPTZ;
-
-CREATE TABLE payment_requests (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_name TEXT NOT NULL,
-  user_email TEXT NOT NULL,
-  plan TEXT NOT NULL,
-  chain TEXT NOT NULL,
-  tx_hash TEXT,
-  status TEXT DEFAULT 'pending',
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
-);
-```
-
-**Backend endpoints**
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/api/payments/request` | Submit payment request |
-| GET | `/api/payments/requests` | Admin — list all requests |
-| POST | `/api/payments/requests/:id/approve` | Admin — approve & activate subscription |
-| POST | `/api/payments/requests/:id/reject` | Admin — reject request |
-
-**Payment flow**
-1. User selects plan → clicks Pay
-2. Modal: choose chain (20+ networks) → send crypto to wallet → submit tx hash + name + email
-3. Admin reviews in panel → approves → user subscription activates in DB
-
-**Wallet:** `0xd4062e68022ef5235898CBc4f069A0df4fF2Ea6C`  
-**Plans:** Premium $50 · Elite $99
-
-### Deliverables
-
-- [ ] SQL migration file
-- [ ] Backend payment routes fully working
-- [ ] Admin approve/reject connected to DB
-- [ ] Live frontend URL
-- [ ] Live backend URL
-- [ ] Temporary admin credentials for review
-
-### Rules
-
-- No hardcoded secrets
-- Admin route must be protected from regular users
-- Localhost screenshots will not be accepted — live deployment required
 
 ---
 
